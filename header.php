@@ -153,9 +153,7 @@ if (isset($_SESSION['user_id'])) {
             </nav>
         </div>
 
-        <!-- Wishlist, Cart, Login/Register or Profile -->
         <div class="col-lg-4 col-md-3 text-right d-flex justify-content-end align-items-center">
-            <!-- Display Profile Image and Logout if User is Logged In -->
             <?php if ($profile_picture): ?>
                 <a href="profile.php" class="btn btn-primary mx-1">
                     <img src="uploads/<?php echo $profile_picture; ?>" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%;">

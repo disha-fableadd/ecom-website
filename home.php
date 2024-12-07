@@ -1,16 +1,15 @@
 <?php
-// Include the database connection file
+
 include('db.php');
 
-// SQL query to fetch products from the database
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
+
 ?>
 
 
 <?php
 include 'header.php';
-
 ?>
 
 <div id="header-carousel" class="carousel slide" data-ride="carousel">
@@ -87,15 +86,14 @@ include 'header.php';
     </div>
     <div class="row px-xl-5 pb-3">
         <?php
-        // Check if there are products in the database
         if ($result->num_rows > 0) {
-            // Output data for each product
             while ($row = $result->fetch_assoc()) {
                 ?>
                 <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                     <div class="card product-item border-0 mb-4">
                         <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid"style="height:300px;width:300px" src="uploads/<?php echo $row['image']; ?>" alt="">
+                            <img class="img-fluid" style="height:300px;width:300px" src="uploads/<?php echo $row['image']; ?>"
+                                alt="">
                         </div>
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3"><?php echo $row['name']; ?></h6>
@@ -108,7 +106,6 @@ include 'header.php';
                             <a href="details.php?id=<?php echo $row['id']; ?>" class="btn btn-sm text-dark p-0"><i
                                     class="fas fa-eye text-primary mr-1"></i>View
                                 Detail</a>
-                           
                         </div>
                     </div>
                 </div>
@@ -121,15 +118,7 @@ include 'header.php';
         ?>
     </div>
 </div>
-<!-- Products End -->
 
-
-
-
-
-
-
-<!-- Vendor Start -->
 <div class="container-fluid py-5">
     <div class="row px-xl-5">
         <div class="col">
