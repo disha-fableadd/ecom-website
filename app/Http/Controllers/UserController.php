@@ -120,9 +120,6 @@ class UserController extends Controller
             'message' => 'Password changed successfully.'
         ]);
     }
-    public function logout()
-    {
-        session()->forget('user');
-        return redirect()->route('login');
-    }
+    
+
 }

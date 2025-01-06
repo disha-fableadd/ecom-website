@@ -61,7 +61,6 @@ Route::get('/order/success', [OrderController::class, 'successPage'])->name('ord
 
 
 
-
 Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
 Route::post('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
 Route::get('/user/orders', [UserController::class, 'fetchOrders'])->name('user.orders');

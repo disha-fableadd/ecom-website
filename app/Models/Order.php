@@ -22,7 +22,9 @@ class Order extends Model
         'zip_code', 
         'city', 
         'state', 
-        'total'
+        'total',
+        'payment_method',
+        'status'
     ];
 
     public function user()

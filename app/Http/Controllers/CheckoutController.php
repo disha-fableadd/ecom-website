@@ -52,6 +52,7 @@ class CheckoutController extends Controller
             'city' => 'required|string',
             'state' => 'required|string',
             'zip_code' => 'required|string',
+            'payment_method' => 'required|string',
         ]);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -67,11 +68,9 @@ class CheckoutController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        // Start a transaction
         DB::beginTransaction();
 
         try {
-            // Create the Order
             $order = new Order();
             $order->uid = $user->id;
             $order->first_name = $request->first_name;
@@ -83,6 +82,8 @@ class CheckoutController extends Controller
             $order->state = $request->state;
             $order->zip_code = $request->zip_code;
             $order->total = $total;
+            $order->payment_method = $request->payment_method;  
+            $order->status = 'pending';
             $order->save();
 
             foreach ($cart_items as $item) {
