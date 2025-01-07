@@ -10,16 +10,12 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Models\Cart;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\OrdersController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,11 +33,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/contact', function () {
     $user = session('user');
-        $cartCount = 0;
-        if ($user) {
-            $cartCount = Cart::where('uid', $user->id)->count();
-        }
-    return view('contact',compact('cartCount')); 
+    $cartCount = 0;
+    if ($user) {
+        $cartCount = Cart::where('uid', $user->id)->count();
+    }
+    return view('contact', compact('cartCount'));
 })->name('contact');
 
 Route::get('product/{id}', [ProductController::class, 'show'])->name('product.show');
@@ -65,3 +61,48 @@ Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.
 Route::post('/user/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
 Route::get('/user/orders', [UserController::class, 'fetchOrders'])->name('user.orders');
 Route::post('/change-password', [UserController::class, 'changePassword'])->name('change.password');
+
+Route::get('/testadmin', function () {
+    dd('hhh');
+});
+
+/*
+Admin routes
+*/
+
+Route::prefix('admin')->group(function () {
+
+    Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
+
+    Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
+    Route::get('/profile/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::get('/profile/{id}', [AdminController::class, 'update'])->name('admin.update');
+
+
+    Route::get('/users', [CustomerController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [CustomerController::class, 'create'])->name('users.create');
+    Route::post('/users', [CustomerController::class, 'store'])->name('users.store');
+    Route::get('users/{id}', [CustomerController::class, 'show'])->name('users.show');
+    Route::get('users/{id}/edit', [CustomerController::class, 'edit'])->name('users.edit');
+    Route::put('users/{id}', [CustomerController::class, 'update'])->name('users.update');
+    Route::delete('users/{id}', [CustomerController::class, 'destroy'])->name('users.destroy');
+
+    Route::get( '/products', [ProductsController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [ProductsController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
+    Route::get('products/{id}', [ProductsController::class, 'show'])->name('products.show');
+    Route::get('products/{id}/edit', [ProductsController::class, 'edit'])->name('products.edit');
+    Route::put('products/{id}', [ProductsController::class, 'update'])->name('products.update');
+    Route::delete('products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
+
+
+   
+    Route::get( '/orders', [OrdersController::class, 'index'])->name('orders.index');
+    Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
+    Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
+
+
+});
