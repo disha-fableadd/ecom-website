@@ -1,7 +1,53 @@
 @extends('admin-layout.app')
 @section('title', 'dashboard')
 @section('content')
+<style>
+    .heading1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
+
+    .view-products-btn {
+        padding: 10px 20px;
+        background-color: #214162;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 173px;
+    }
+
+    .view-products-btn1 {
+        padding: 10px 20px;
+        background-color: #214162;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 214px;
+    }
+
+    .view-products-btn3 {
+        padding: 10px 20px;
+        background-color: #214162;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 670px;
+    }
+
+    .view-products-btn:hover {
+        background-color: #214162;
+        color: white;
+    }
+
+    h2 {
+        margin: 0;
+    }
+</style>
 <div class="container-fluid">
 
     <div class="row column1 mt-5">
@@ -9,7 +55,8 @@
             <div class="full counter_section margin_bottom_30">
                 <div class="couter_icon">
                     <div>
-                        <i class="fa fa-user yellow_color"></i>
+                        <a href="{{route('users.index')}}"><i class="fa fa-user yellow_color"></i></a>
+
                     </div>
                 </div>
                 <div class="counter_no">
@@ -24,7 +71,7 @@
             <div class="full counter_section margin_bottom_30">
                 <div class="couter_icon">
                     <div>
-                        <i class="fa fa-briefcase blue1_color"></i>
+                        <a href="{{route('products.index')}}"> <i class="fa fa-briefcase blue1_color"></i></a>
 
                     </div>
                 </div>
@@ -40,7 +87,7 @@
             <div class="full counter_section margin_bottom_30">
                 <div class="couter_icon">
                     <div>
-                        <i class="fa fa-clone green_color"></i>
+                        <a href="{{route('orders.index')}}"> <i class="fa fa-clone green_color"></i></a>
 
                     </div>
                 </div>
@@ -61,6 +108,7 @@
                 <div class="full graph_head">
                     <div class="heading1 margin_0">
                         <h2>Product Report </h2>
+                        <a class="view-products-btn" href="{{route('products.index')}}"> View Products</a>
                     </div>
                 </div>
                 <div class="full graph_revenue">
@@ -81,6 +129,7 @@
                 <div class="full graph_head">
                     <div class="heading1 margin_0">
                         <h2>Order Report</h2>
+                        <a class="view-products-btn1" href="{{route('orders.index')}}"> View Ordes</a>
                     </div>
                 </div>
                 <div class="full graph_revenue">
@@ -103,7 +152,8 @@
             <div class="white_shd full">
                 <div class="full graph_head">
                     <div class="heading1 margin_0">
-                        <h2>User Report </h2>
+                        <h2>Customers Report </h2>
+                        <a class="view-products-btn3" href="{{route('users.index')}}"> View Customers</a>
                     </div>
                 </div>
                 <div class="full graph_revenue">
@@ -122,17 +172,17 @@
     </div>
 
 
-  
 
- 
+
+
 
     <div class="row column1 mt-5">
         <div class="col-md-6">
             <div class="white_shd full margin_bottom_30">
                 <div class="full graph_head">
                     <div class=" d-flex heading1 margin_0">
-                        <h2>All Users</h2>
-                      
+                        <h2>Customers</h2>
+                       
                     </div>
                 </div>
                 <div class="full price_table padding_infor_info">
@@ -142,19 +192,19 @@
                                 <table class="table table-striped projects">
                                     <thead class="thead-dark text-center">
                                         <tr>
-                                           
+
                                             <th>Profile_Picture</th>
                                             <th>Name</th>
                                             <th>Email</th>
-                                           
-                                           
+
+
                                         </tr>
                                     </thead>
                                     <tbody class="text-center">
                                         @foreach($users as $index => $user)
                                             <tr>
-                                          
-                                            <td >
+
+                                                <td>
                                                     @if($user->profile_picture)
                                                         <img src="{{ asset('storage/' . $user->profile_picture) }}"
                                                             alt="Profile Picture"
@@ -162,21 +212,19 @@
                                                     @else
                                                         No Image
                                                     @endif
-                                                </td>    
-                                            <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                                                </td>
+                                                <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                                                 <td>{{ $user->email }}</td>
-                                                
-                                                
+
+
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <br><br><br>
+                               
+                                <br>
 
-                                <!-- Pagination links -->
-                                <div class="d-flex justify-content-center">
-                                    {{ $users->links('pagination::bootstrap-5') }}
-                                </div>
+                                <a href="{{ route('users.index') }}" class="btn btn-lg " style="background-color: #214162;color:white;float:right">All Customer</a>
 
                             </div>
                         </div>
@@ -189,7 +237,6 @@
                 <div class="full graph_head">
                     <div class="d-flex heading1 margin_0">
                         <h2> Products</h2>
-                        <a href="{{ route('products.create') }}" class="btn btn-lg" style="margin-left: 785px; background-color:#15283c; color:white">Add New Product</a>
                     </div>
                 </div>
                 <div class="full price_table padding_infor_info">
@@ -199,21 +246,20 @@
                                 <table class="table table-striped projects">
                                     <thead class="thead-dark text-center">
                                         <tr>
-                                          
+
                                             <th>Product Image</th>
                                             <th>Product Name</th>
                                             <th>Price</th>
-                                            
+
                                         </tr>
                                     </thead>
                                     <tbody class="text-center">
                                         @foreach($products as $index => $product)
                                             <tr>
-                                              
+
                                                 <td>
                                                     @if($product->image)
-                                                        <img src="{{ asset('storage/' . $product->image) }}" 
-                                                            alt="Product Image" 
+                                                        <img src="{{ asset('storage/' .  json_decode($product->image)[0]) }}" alt="Product Image"
                                                             style="width: 50px; height: 50px; border-radius: 5px;">
                                                     @else
                                                         No Image
@@ -221,17 +267,16 @@
                                                 </td>
                                                 <td>{{ $product->name }}</td>
                                                 <td>${{ number_format($product->price, 2) }}</td>
-                                               
+
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <br><br><br>
+                                <br>
+                                <a href="{{ route('products.index') }}" class="btn btn-lg " style="background-color: #214162;color:white;float:right">All Product</a>
 
-                                <!-- Pagination links -->
-                                <div class="d-flex justify-content-center">
-                                    {{ $products->links('pagination::bootstrap-5') }}
-                                </div>
+
+
 
                             </div>
                         </div>
@@ -243,12 +288,12 @@
     </div>
 
 
- 
 
 
-  
 
-   
+
+
+
 
 
 
@@ -265,7 +310,7 @@
                 datasets: [
                     {
                         type: 'bar',
-                        label: 'Users',
+                        label: 'Customers',
                         data: @json($userCounts),
                         backgroundColor: 'rgba(54, 162, 235, 0.5)'
                     },

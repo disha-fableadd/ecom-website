@@ -28,6 +28,7 @@
                                         <h3>{{ $user->first_name }} {{ $user->last_name }}</h3>
 
                                         <ul class="list-unstyled">
+                                        
                                             <li><i class="fa fa-envelope-o"></i> : {{ $user->email }}</li><br><br>
                                             <li><i class="fa fa-phone"></i> : {{ $user->mobile ?? 'Phone not set' }}
                                             </li><br><br>
@@ -40,7 +41,7 @@
                                         </ul>
 
                                     </div>
-                                    <a href="{{ route('admin.edit', $user->id) }}" class="btn btn-lg" 
+                                    <a href="{{ route('admin.editprofile', $user->id) }}" class="btn btn-lg" 
                                        style="position: absolute; bottom: 20px; right: 20px; background-color:#15283c; color:white">
                                        Edit Profile
                                     </a>

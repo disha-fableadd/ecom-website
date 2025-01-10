@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Models\Cart;
+use App\Models\Product;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
@@ -19,6 +20,10 @@ use App\Http\Controllers\OrdersController;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
 });
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
@@ -62,9 +67,7 @@ Route::post('/user/profile/edit', [UserController::class, 'editProfile'])->name(
 Route::get('/user/orders', [UserController::class, 'fetchOrders'])->name('user.orders');
 Route::post('/change-password', [UserController::class, 'changePassword'])->name('change.password');
 
-Route::get('/testadmin', function () {
-    dd('hhh');
-});
+
 
 /*
 Admin routes
@@ -72,13 +75,15 @@ Admin routes
 
 Route::prefix('admin')->group(function () {
 
+
+
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
 
     Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
-    Route::get('/profile/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::get('/profile/{id}/editprofile', [AdminController::class, 'edit'])->name('admin.editprofile');
     Route::get('/profile/{id}', [AdminController::class, 'update'])->name('admin.update');
 
 
@@ -90,7 +95,7 @@ Route::prefix('admin')->group(function () {
     Route::put('users/{id}', [CustomerController::class, 'update'])->name('users.update');
     Route::delete('users/{id}', [CustomerController::class, 'destroy'])->name('users.destroy');
 
-    Route::get( '/products', [ProductsController::class, 'index'])->name('products.index');
+    Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductsController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
     Route::get('products/{id}', [ProductsController::class, 'show'])->name('products.show');
@@ -99,10 +104,17 @@ Route::prefix('admin')->group(function () {
     Route::delete('products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
 
 
-   
-    Route::get( '/orders', [OrdersController::class, 'index'])->name('orders.index');
+    Route::get('/orders/create', [OrdersController::class, 'create'])->name('orders.create');
+    Route::post('/orders', [OrdersController::class, 'store'])->name('orders.store');
+    
+    Route::get('/orders', [OrdersController::class, 'index'])->name('orders.index');
     Route::get('orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
     Route::delete('orders/{id}', [OrdersController::class, 'destroy'])->name('orders.destroy');
 
 
+
+
 });
+Route::fallback(function () {
+    return view('admin.error');
+})->prefix('admin');

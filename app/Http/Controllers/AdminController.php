@@ -12,7 +12,7 @@ class AdminController extends Controller
 {
     public function showLoginForm()
     {
-        return view('admin.login'); // Point to your login view
+        return view('admin.login'); 
     }
 
     public function login(Request $request)
@@ -42,15 +42,15 @@ class AdminController extends Controller
     public function dashboard()
     {
        
+  
         $user = session('user');
-      
         if (!$user) {
             return redirect()->route('admin.login');
         }
 
 
-        $users = Userr::paginate(5);
-        $products = Product::orderBy('id', 'desc')->paginate(5);
+        $users = Userr::latest()->take(5)->get();
+        $products = Product::latest()->take(5)->get();
 
 
         $userData = Userr::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
@@ -119,7 +119,6 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
-        // Return the view with the user data
         return view('admin.profile', compact('user'));
     }
 
@@ -127,7 +126,7 @@ class AdminController extends Controller
     {
       
         $user = Userr::findOrFail($id);
-        return view('admin.edit', compact('user'));
+        return view('admin.editprofile', compact('user'));
     }
 
     public function update(Request $request, $id)
@@ -137,14 +136,14 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email',
             'age' => 'required|integer|min:18',
-            'gender' => 'required|in:male,female,other',
+            'gender' => 'required|in:Male,Female,Other',
             'mobile' => 'required|string|max:15',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-
+    
         // Find the user
         $user = Userr::findOrFail($id);
-
+    
         // Update user fields
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
@@ -152,18 +151,16 @@ class AdminController extends Controller
         $user->age = $request->input('age');
         $user->gender = $request->input('gender');
         $user->mobile = $request->input('mobile');
-
-        // Check if profile picture is uploaded and update
+    
         if ($request->hasFile('profile_picture')) {
-            // Store the new image
             $path = $request->file('profile_picture')->store('uploads', 'public');
             $user->profile_picture = $path;
         }
-        // Save the updated user
         $user->save();
-
-        // Redirect back with a success message
+    
+        session(['user' => $user]);
+    
         return redirect()->route('admin.profile')->with('success', 'User updated successfully');
     }
-
+    
 }

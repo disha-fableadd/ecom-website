@@ -4,8 +4,8 @@
          <button type="button" id="sidebarCollapse" class="sidebar_toggle text-dark"><i class="fa fa-bars text-dark"></i></button>
          <div class="logo_section">
             <a href="" class="text-decoration-none">
-               <h1 class=" display-5 font-weight-semi-bold " style="color:#D19C97;margin-left:10px;margin-top:10px">
-                  <span class=" font-weight-bold border px-3 mr-1" style="color:#D19C97;">E</span>Shopper
+               <h1 class=" display-5 font-weight-semi-bold " style="color:#214162;margin-left:10px;margin-top:10px">
+                  <span class=" font-weight-bold border px-3 mr-1" style="color:#214162;">E</span>Shopper
                </h1>
             </a>
          </div>

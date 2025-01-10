@@ -11,12 +11,32 @@
             <div class="white_shd full margin_bottom_30">
                 <div class="full graph_head">
                     <div class=" d-flex heading1 margin_0">
-                        <h2>All Users</h2>
+                        <h2>Customers</h2>
                         <a href="{{ route('users.create') }}" class="btn  btn-lg "
                             style="margin-left: 785px;background-color:#15283c;color:white">Add New User</a>
                     </div>
                 </div>
                 <div class="full price_table padding_infor_info">
+                <div class="row" >
+                        <div class="col-md-6 mx-auto" >
+                            <form action="{{ route('users.index') }}" method="GET"  >
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="search" placeholder="Search products"
+                                        value="{{ request('search') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-lg" style="margin-left:4px;background-color:#15283c; color:white"
+                                            type="submit">Search</button>
+                                        <!-- Reset Button -->
+                                        <a href="{{ route('users.index') }}" class="btn btn-lg"
+                                            style=" margin-left:5px;background-color:#d9534f; color:white;">Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <br>
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="table-responsive-sm">

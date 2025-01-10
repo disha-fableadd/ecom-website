@@ -52,13 +52,13 @@
                     <label for="gender">Gender</label>
                     <div class="form-control">
                         <label class="radio-inline mb-0">
-                        <input type="radio" name="gender" value="male" {{$user->gender == 'male' ? 'checked' : '' }} id="male"> Male
+                        <input type="radio" name="gender" value="Male" {{$user->gender == 'Male' ? 'checked' : '' }} id="male"> Male
                         </label>
                         <label class="radio-inline mb-0">
-                        <input type="radio" name="gender" value="female" {{ $user->gender == 'female' ? 'checked' : '' }} id="female"> Female
+                        <input type="radio" name="gender" value="Female" {{ $user->gender == 'Female' ? 'checked' : '' }} id="female"> Female
                         </label>
                         <label class="radio-inline mb-0">
-                        <input type="radio" name="gender" value="other" {{ $user->gender == 'other' ? 'checked' : '' }} id="other"> Other
+                        <input type="radio" name="gender" value="Other" {{ $user->gender == 'Other' ? 'checked' : '' }} id="other"> Other
                         </label>
                     </div>
                     @error('gender')

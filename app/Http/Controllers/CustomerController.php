@@ -12,7 +12,13 @@ class CustomerController extends Controller
 {
     public function create()
     {
-        return view('users.create');
+        $user = session('user');
+        if (!$user) {
+            return redirect()->route('admin.login');
+        }
+
+
+        return view('users.create', compact('user'));
     }
 
     // Store a New User
@@ -21,10 +27,10 @@ class CustomerController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:user,email',
             'password' => 'required|string|min:6',
             'age' => 'required|integer',
-            'gender' => 'required|in:male,female,other',
+            'gender' => 'required|in:Male,Female,Other',
             'mobile' => 'nullable|string|max:15',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
@@ -46,28 +52,52 @@ class CustomerController extends Controller
             'profile_picture' => $profile_picture_path,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User added successfully!');
+        return response()->json(['message' => 'User added successfully']);
     }
 
     // Display All Users
-    public function index()
+    public function index(Request $request)
     {
-        $users = Userr::paginate(5);
-        return view('users.index', compact('users'));
+        $user = session('user');
+        if (!$user) {
+            return redirect()->route('admin.login');
+        }
+
+        $query = Userr::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+
+            $query->where('first_name', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%");
+        }
+
+        $users = $query->orderBy('updated_at', 'desc')->paginate(5);
+
+        return view('users.index', compact('users', 'user'));
     }
     public function show($id)
     {
-        $user = Userr::findOrFail($id);
+        $user = session('user');
+        if (!$user) {
+            return redirect()->route('admin.login');
+        }
+        $userr = Userr::findOrFail($id);
 
-        return view('users.show', compact('user'));
+        return view('users.show', compact('userr', 'user'));
     }
 
     public function edit($id)
     {
-        // dd('Edit route reached'); // Debugging to check if the route is being hit
-        $user = Userr::findOrFail($id);
-        return view('users.edit', compact('user'));
+        $user = session('user');
+        if (!$user) {
+            return redirect()->route('admin.login');
+        }
+
+        $userr = Userr::findOrFail($id);
+        return view('users.edit', compact('userr', 'user'));
     }
+
     public function update(Request $request, $uid)
     {
         $user = Userr::findOrFail($uid);
@@ -78,7 +108,7 @@ class CustomerController extends Controller
             'email' => 'required|email|unique:user,email,',
             'password' => 'nullable|min:8',
             'age' => 'required|integer',
-            'gender' => 'required|string',
+            'gender' => 'required|in:Male,Female,Other',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
             'mobile' => 'required|string',
         ]);

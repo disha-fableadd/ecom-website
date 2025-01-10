@@ -55,7 +55,7 @@
                                                     <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
                                                     <td>
                                                         @if ($item->product->image)
-                                                            <img src="{{ asset('storage/' . $item->product->image) }}" alt="Product Image" width="100" height="100">
+                                                            <img src="{{ asset('storage/' . json_decode($item->product->image)[0])  }}" alt="Product Image" width="100" height="100">
                                                         @else
                                                             <img src="{{ asset('images/default-product.png') }}" alt="Default Product" width="100" height="100">
                                                         @endif

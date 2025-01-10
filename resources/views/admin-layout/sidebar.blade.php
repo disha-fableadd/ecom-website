@@ -4,12 +4,11 @@
         <div class="sidebar_user_info">
             <div class="icon_setting"></div>
             <div class="user_profle_side">
-                <div class="user_img"><img class="img-responsive"
-                        src="{{ asset('storage/' . $user->profile_picture) }}" alt="#" /></div>
-                <div class="user_info">
-                    <h6>{{ $user->first_name }} {{ $user->last_name }}</h6>
-                    <p class="text-light"> <small>Admin Dashboard</small> </p>
-                </div>
+            <a href="" class="text-decoration-none">
+               <h1 class=" display-5 font-weight-semi-bold " style="color:white;margin-left:10px;margin-top:10px">
+                  <span class=" font-weight-bold border px-3 mr-1" style="color:white;">E</span>Shopper
+               </h1>
+            </a>
             </div>
         </div>
     </div>
@@ -44,7 +43,7 @@
                 <a href="#additional_page" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                         class="fa fa-clone yellow_color"></i> <span> Orders</span></a>
                 <ul class="collapse list-unstyled" id="additional_page">
-                   
+              
                     <li>
                         <a href="{{route('orders.index')}}">> <span>All Order</span></a>
                     </li>

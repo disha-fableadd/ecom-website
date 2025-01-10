@@ -33,6 +33,16 @@
 
 
    <style>
+      .page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #15283c;
+    border-color: #15283c;
+}
+      select.form-control:not([size]):not([multiple]) {
+         height: calc(2.25rem + 10px);
+      }
+
       .sidebar_toggle {
          border: none;
          padding: 12px 26px 14px;
@@ -87,10 +97,10 @@
          width: 70%;
          margin: 0 auto;
          padding: 20px;
-     
+
          border-radius: 8px;
          background-color: #f9f9f9;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       .form-style .form-group {

@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'category',
+        'category_id',
         'price',
         'description',
         'image',
@@ -23,5 +23,9 @@ class Product extends Model
     public function orderItems()
 {
     return $this->hasMany(OrderItem::class, 'pid');
+}
+public function category()
+{
+    return $this->belongsTo(Category::class, 'category_id', 'id');
 }
 }

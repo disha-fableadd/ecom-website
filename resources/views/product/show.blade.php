@@ -7,7 +7,7 @@
     <div class="row">
         <!-- Product Image -->
         <div class="col-md-6">
-            <img class="img-fluid" src="{{ asset('storage/' . $products->image) }}" alt="{{ $products->name }}" style="width: 500px;height:500px;">
+            <img class="img-fluid" src="{{ asset('storage/' . json_decode($products->image)[0]) }}" alt="{{ $products->name }}" style="width: 500px;height:500px;">
         </div>
         
         <!-- Product Info -->

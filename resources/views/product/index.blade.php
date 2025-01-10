@@ -78,8 +78,8 @@
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
                                 <a class="dropdown-item" href="?page=1&price={{ $price_filter }}&search={{ $search_keyword }}&sort=all_categories">All Categories</a>
                                 @foreach ($categories as $category)
-                                    <a class="dropdown-item" href="?page=1&price={{ $price_filter }}&search={{ $search_keyword }}&sort=category_{{ urlencode($category->category) }}">
-                                        {{ $category->category }}
+                                    <a class="dropdown-item" href="?page=1&price={{ $price_filter }}&search={{ $search_keyword }}&sort=category_{{ $category->id }}">
+                                        {{ $category->name }}
                                     </a>
                                 @endforeach
                             </div>
@@ -88,27 +88,28 @@
                 </div>
                 <!-- Products -->
                 @forelse ($products as $product)
-                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                            <div class="card product-item border-0 mb-4">
-                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <img class="img-fluid" style="height:300px;width:300px" src="{{ asset('storage/' . $product->image) }}" alt="Product">
-                                </div>
-                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3">{{ $product->name }}</h6>
-                                    <div class="d-flex justify-content-center">
-                                        <h6>${{ $product->price }}</h6>
-                                    </div>
-                                </div>
-                                <div class="card-footer mx-auto">
-                                    <a href="{{ route('product.show', $product->id) }}" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                   
-                                </div>
-                            </div>
-                        </div>
-                        @empty
-                       <p class='text-center mt-5'>No products found that match your filters.</p>
-                        @endforelse
+    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+        <div class="card product-item border-0 mb-4">
+            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                <img class="img-fluid" style="height:300px;width:300px" 
+                     src="{{ asset('storage/' . json_decode($product->image)[0]) }}" alt="Product">
+            </div>
+            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                <h6 class="text-truncate mb-3">{{ $product->name }}</h6>
+                <div class="d-flex justify-content-center">
+                    <h6>${{ $product->price }}</h6>
+                </div>
+            </div>
+            <div class="card-footer mx-auto">
+                <a href="{{ route('product.show', $product->id) }}" class="btn btn-sm text-dark p-0">
+                    <i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+            </div>
+        </div>
+    </div>
+@empty
+    <p class="text-center mt-5">No products found that match your filters.</p>
+@endforelse
+
             </div>
 
             <!-- Pagination -->

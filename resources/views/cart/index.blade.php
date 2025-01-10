@@ -21,7 +21,7 @@
                                 <tr>
                                     <td class="align-middle">{{ $item->product->name }}</td>
                                     <td class="align-middle">
-                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}"
+                                        <img src="{{ asset('storage/' . json_decode($item->product->image)[0])  }}" alt="{{ $item->product->name }}"
                                             width="50">
                                     </td>
                                     <td class="align-middle">{{ number_format($item->product->price, 2) }}</td>

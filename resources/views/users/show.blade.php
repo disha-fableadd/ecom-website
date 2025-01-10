@@ -55,17 +55,17 @@
                                 <h4 class="brief">User Info</h4>
                                 <div class="contact_inner">
                                     <div class="left">
-                                        <h3>{{ $user->first_name }} {{ $user->last_name }}</h3>
-                                        <p><strong>Email:</strong> {{ $user->email }}</p>
-                                        <p><strong>Age:</strong> {{ $user->age }}</p>
-                                        <p><strong>Gender:</strong> {{ $user->gender }}</p>
-                                        <p><strong>Mobile:</strong> {{ $user->mobile }}</p>
+                                        <h3>{{ $userr->first_name }} {{ $userr->last_name }}</h3>
+                                        <p><strong>Email:</strong> {{ $userr->email }}</p>
+                                        <p><strong>Age:</strong> {{ $userr->age }}</p>
+                                        <p><strong>Gender:</strong> {{ $userr->gender }}</p>
+                                        <p><strong>Mobile:</strong> {{ $userr->mobile }}</p>
                                     </div>
                                     <div class="right">
                                         <div class="profile_contacts">
-                                            @if ($user->profile_picture)
+                                            @if ($userr->profile_picture)
                                                 <img class="img-responsive"
-                                                    src="{{ asset('storage/' . $user->profile_picture) }}"
+                                                    src="{{ asset('storage/' . $userr->profile_picture) }}"
                                                     alt="Profile Picture" width="150" height="150" />
                                             @else
                                                 <img class="img-responsive" src="{{ asset('images/default-profile.png') }}"

@@ -5,7 +5,7 @@ use App\Models\Product;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Database\Query\Builder;
-
+use App\Models\Category;
 class ProductController extends Controller
 {
     public function show($id)
@@ -68,25 +68,19 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $search_keyword . '%');
         }
 
-     
-        if ($sort_option !== 'all_categories') {
-            if (str_starts_with($sort_option, 'category_')) {
-                $category = str_replace('category_', '', $sort_option);
-                $query->where('category', $category);
-            } else {
-                abort(404, 'Invalid sort parameter');
-            }
-        }
+       // Check if sorting by category
+       if (str_starts_with($sort_option, 'category_')) {
+        $category_id = str_replace('category_', '', $sort_option);
+        $query->where('category_id', $category_id);
+    }
 
-      
-        if ($sort_option) {
-            $query->orderBy('id');
-        }
+    if ($sort_option && $sort_option !== 'all_categories') {
+        $query->orderBy('id');
+    }
 
-        $products = $query->paginate($products_per_page);
+    $products = $query->paginate($products_per_page);
 
-       
-        $categories = Product::select('category')->distinct()->get();
+    $categories = Category::all();
 
         return view('product.index', compact('products', 'price_filter', 'search_keyword', 'categories','cartCount', 'sort_option', 'sort_option'));
     }
