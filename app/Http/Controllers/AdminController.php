@@ -12,7 +12,7 @@ class AdminController extends Controller
 {
     public function showLoginForm()
     {
-        return view('admin.login'); 
+        return view('admin.login');
     }
 
     public function login(Request $request)
@@ -21,14 +21,14 @@ class AdminController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
-    
+
         $user = Userr::where('email', $request->email)->first();
-    
+
         if ($user && Hash::check($request->password, $user->password)) {
-    
+
             if ($user->role == 1) {
                 session(['user' => $user]);
-    
+
                 return redirect()->route('admin.dashboard');
             } else {
                 return back()->withErrors(['email' => 'You do not have access to this page.']);
@@ -37,12 +37,12 @@ class AdminController extends Controller
             return back()->withErrors(['email' => 'Invalid email or password.']);
         }
     }
-    
+
 
     public function dashboard()
     {
-       
-  
+
+
         $user = session('user');
         if (!$user) {
             return redirect()->route('admin.login');
@@ -58,39 +58,41 @@ class AdminController extends Controller
             ->pluck('count', 'month')
             ->toArray();
 
-        $productData = DB::table('product')
+            $productData = DB::table('product')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month')
             ->toArray();
+                //    dd($productData);
 
         $orderData = DB::table('order_items')
-            ->join('product', 'order_items.pid', '=', 'product.id')
-            ->selectRaw('product.name, COUNT(order_items.id) as count')  // Count the order_items.id
-            ->groupBy('order_items.pid', 'product.name')
-            ->get();
-
+            ->selectRaw('MONTH(created_at) as month,COUNT(*) as count')
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+        // dd($orderData);
         $labels = [];
         $userCounts = [];
         $productCounts = [];
+        $orderCounts = [];
 
 
         for ($i = 1; $i <= 12; $i++) {
             $labels[] = date('F', mktime(0, 0, 0, $i, 1));
             $userCounts[] = $userData[$i] ?? 0;
             $productCounts[] = $productData[$i] ?? 0;
+            $orderCounts[] = $orderData[$i]??0;
         }
 
-        foreach ($orderData as $status => $count) {
-            $orderStatuses[] = ucfirst($status); // Convert status to a readable format
-            $orderCounts[] = $count;
-        }
-
+       
 
 
         $totalOrders = DB::table('orders')->count();
         $totalProducts = DB::table('product')->count();
         $totalCustomers = DB::table('user')->where('role', 2)->count();
+
+
+
         return view('admin.dashboard', compact(
             'totalOrders',
             'totalProducts',
@@ -98,6 +100,8 @@ class AdminController extends Controller
             'labels',
             'userCounts',
             'productCounts',
+            'productData',
+            'orderCounts',
             'orderData',
             'users',
             'products',
@@ -124,7 +128,7 @@ class AdminController extends Controller
 
     public function edit($id)
     {
-      
+
         $user = Userr::findOrFail($id);
         return view('admin.editprofile', compact('user'));
     }
@@ -140,10 +144,10 @@ class AdminController extends Controller
             'mobile' => 'required|string|max:15',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-    
+
         // Find the user
         $user = Userr::findOrFail($id);
-    
+
         // Update user fields
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
@@ -151,16 +155,16 @@ class AdminController extends Controller
         $user->age = $request->input('age');
         $user->gender = $request->input('gender');
         $user->mobile = $request->input('mobile');
-    
+
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('uploads', 'public');
             $user->profile_picture = $path;
         }
         $user->save();
-    
+
         session(['user' => $user]);
-    
+
         return redirect()->route('admin.profile')->with('success', 'User updated successfully');
     }
-    
+
 }

@@ -42,6 +42,7 @@ class ProductsController extends Controller
     }
     public function store(Request $request)
     {
+      
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|exists:categories,id',
@@ -49,27 +50,39 @@ class ProductsController extends Controller
             'description' => 'nullable|string',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:2048',
         ]);
-
+    
+       
         $imagePaths = [];
-
+    
+       
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $imagePaths[] = $image->store('product', 'public');
             }
         }
-
-        Product::create([
+    
+       
+        $product = Product::create([
             'name' => $validated['name'],
             'category_id' => $validated['category'],
             'price' => $validated['price'],
             'description' => $validated['description'],
-            'image' => json_encode($imagePaths),
+            'image' => json_encode($imagePaths), 
         ]);
+    
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added successfully!',
+                'product' => $product, 
+            ]);
+        }
+    
+       
         return redirect()->route('products.index')->with('success', 'Product added successfully.');
     }
-
-
+    
 
     public function show($id)
     {

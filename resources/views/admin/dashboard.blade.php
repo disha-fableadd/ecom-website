@@ -1,6 +1,8 @@
 @extends('admin-layout.app')
 @section('title', 'dashboard')
 @section('content')
+
+
 <style>
     .heading1 {
         display: flex;
@@ -182,7 +184,7 @@
                 <div class="full graph_head">
                     <div class=" d-flex heading1 margin_0">
                         <h2>Customers</h2>
-                       
+
                     </div>
                 </div>
                 <div class="full price_table padding_infor_info">
@@ -221,10 +223,11 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                               
+
                                 <br>
 
-                                <a href="{{ route('users.index') }}" class="btn btn-lg " style="background-color: #214162;color:white;float:right">All Customer</a>
+                                <a href="{{ route('users.index') }}" class="btn btn-lg "
+                                    style="background-color: #214162;color:white;float:right">All Customer</a>
 
                             </div>
                         </div>
@@ -259,7 +262,8 @@
 
                                                 <td>
                                                     @if($product->image)
-                                                        <img src="{{ asset('storage/' .  json_decode($product->image)[0]) }}" alt="Product Image"
+                                                        <img src="{{ asset('storage/' . json_decode($product->image)[0]) }}"
+                                                            alt="Product Image"
                                                             style="width: 50px; height: 50px; border-radius: 5px;">
                                                     @else
                                                         No Image
@@ -273,7 +277,8 @@
                                     </tbody>
                                 </table>
                                 <br>
-                                <a href="{{ route('products.index') }}" class="btn btn-lg " style="background-color: #214162;color:white;float:right">All Product</a>
+                                <a href="{{ route('products.index') }}" class="btn btn-lg "
+                                    style="background-color: #214162;color:white;float:right">All Product</a>
 
 
 
@@ -350,18 +355,18 @@
         });
 
 
+        //order chart
 
-        // product chart
-        const productCtx = document.getElementById('productChart').getContext('2d');
-        const productChart = new Chart(productCtx, {
+        const productCtx = document.getElementById('productOrderChart').getContext('2d');
+        const productChart1 = new Chart(productCtx, {
             type: 'line',
             data: {
-                labels: @json($labels),
+                labels: @json($labels),  // This will pass the labels (months) into the chart
                 datasets: [
                     {
                         type: 'line',
-                        label: 'Products',
-                        data: @json($productCounts),
+                        label: 'Orders',
+                        data: @json($orderCounts),  // This will pass the order counts into the chart
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: true
@@ -386,7 +391,7 @@
                     y: {
                         title: {
                             display: true,
-                            text: 'Number of Products'
+                            text: 'Number of Orders'
                         },
                         ticks: {
                             stepSize: 1,
@@ -401,53 +406,70 @@
         });
 
 
-        //order chart
+        // product chart
+        var productData = @json($productData);
 
-        const productOrderCtx = document.getElementById('productOrderChart').getContext('2d');
+        var allMonths = Array.from({ length: 12 }, (v, k) => k + 1);
 
-        // Define dynamic colors, adding more as needed
-        const colors = [
-            'rgba(255, 99, 132, 0.5)',
-            'rgba(54, 162, 235, 0.5)',
-            'rgba(255, 206, 86, 0.5)',
-            'rgba(75, 192, 192, 0.5)',
-            'rgba(153, 102, 255, 0.5)',
-            'rgba(255, 159, 64, 0.5)'
+        var months = allMonths.map(function (month) {
+            return month;
+        });
+
+        var counts = months.map(function (month) {
+            return productData[month] || 0;
+        });
+
+        // Array of month names
+        var monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
-        // Dynamic dataset for products and counts fetched from the database
-        const orderData = @json($orderData);  // Order data now in array format
-
-        // Extract product names and counts
-        const productNames = orderData.map(item => item.name);
-        const productCounts = orderData.map(item => item.count);
-
-        // Ensure we only provide as many colors as there are products
-        const backgroundColors = productCounts.map((_, index) => colors[index % colors.length]);
-        const borderColors = backgroundColors.map(color => color.replace('0.5', '1'));  // Border color slightly darker
-
-        // Create the pie chart with dynamic data
-        const productOrderChart = new Chart(productOrderCtx, {
+        var ctx1 = document.getElementById('productChart').getContext('2d');
+        var productChart = new Chart(ctx1, {
             type: 'pie',
             data: {
-                labels: productNames,  // Dynamic product names from the database
+                labels: months.map(function (month) {
+                    return monthNames[month - 1]; // Get the correct month name
+                }),
                 datasets: [{
-                    data: productCounts,  // Dynamic counts for each product from the database
-                    backgroundColor: backgroundColors,  // Dynamic colors for slices based on available data
-                    borderColor: borderColors,  // Slightly darker borders
-                    borderWidth: 1
+                    data: counts,
+                    backgroundColor: [
+                        '#FFB3B3', '#B3FFB3', '#B3B3FF', '#FFEB99', '#FF9999', '#D1A7D9',
+                        '#A8E6A1', '#A2C8E5', '#FFBB66', '#A3D5D1', '#BCC6D3', '#FFEC66'
+                    ],
+                    hoverBackgroundColor: [
+                        '#FFB3B3', '#B3FFB3', '#B3B3FF', '#FFEB99', '#FF9999', '#D1A7D9',
+                        '#A8E6A1', '#A2C8E5', '#FFBB66', '#A3D5D1', '#BCC6D3', '#FFEC66'
+                    ]
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: true,
                         position: 'top',
+                        // Display the legend items in a row
+                        labels: {
+                            boxWidth: 20, // Adjust size of legend box
+                            padding: 10 // Add padding to space out legend items
+                        },
+                        // Set the legend to display in multiple rows if necessary
+                        display: true,
+                        align: 'center',
+                        fullWidth: true,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' products';
+                            }
+                        }
                     }
                 }
             }
         });
+
     });
 </script>
 

@@ -23,6 +23,7 @@ class Order extends Model
         'city', 
         'state', 
         'total'
+        
        
     ];
 

@@ -43,7 +43,7 @@
                 <a href="#additional_page" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                         class="fa fa-clone yellow_color"></i> <span> Orders</span></a>
                 <ul class="collapse list-unstyled" id="additional_page">
-              
+                <li><a href="{{route('orders.create')}}">> <span>Add Order</span></a></li>
                     <li>
                         <a href="{{route('orders.index')}}">> <span>All Order</span></a>
                     </li>

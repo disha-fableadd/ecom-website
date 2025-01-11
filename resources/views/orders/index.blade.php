@@ -9,19 +9,22 @@
             <div class="white_shd full margin_bottom_30">
                 <div class="full graph_head">
                     <div class="d-flex heading1 margin_0">
-                        <h2>Order Items</h2>
+                        <h2>All Order </h2>
+                        <a href="{{ route('products.create') }}" class="btn btn-lg"
+                        style="margin-left: 785px; background-color:#15283c; color:white">Add New Order</a>
                     </div>
                 </div>
 
                 <div class="full price_table padding_infor_info">
-                <div class="row" >
-                        <div class="col-md-6 mx-auto" >
-                            <form action="{{ route('orders.index') }}" method="GET"  >
+                    <div class="row">
+                        <div class="col-md-6 mx-auto">
+                            <form action="{{ route('orders.index') }}" method="GET">
                                 <div class="input-group">
                                     <input type="text" class="form-control" name="search" placeholder="Search products"
                                         value="{{ request('search') }}">
                                     <div class="input-group-append">
-                                        <button class="btn btn-lg" style="margin-left:4px;background-color:#15283c; color:white"
+                                        <button class="btn btn-lg"
+                                            style="margin-left:4px;background-color:#15283c; color:white"
                                             type="submit">Search</button>
                                         <!-- Reset Button -->
                                         <a href="{{ route('orders.index') }}" class="btn btn-lg"
@@ -49,11 +52,13 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    
+
                                     <tbody class="text-center">
                                         @foreach($orderItems as $index => $item)
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ ($orderItems->currentPage() - 1) * $orderItems->perPage() + $loop->iteration }}
+                                                </td>
+
                                                 <td>{{ $item->order->first_name }} {{ $item->order->last_name }}</td>
                                                 <td>{{ $item->order_id }}</td>
                                                 <td>{{ $item->product->name }}</td>
@@ -61,14 +66,22 @@
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
                                                 <td>
-                                                    <a href="{{ route('orders.show', $item->order_id) }}" class="btn btn-info btn-sm" title="View Order">
+
+                                                    <a href="{{ route('orders.show', $item->order_id) }}"
+                                                        class="btn btn-info btn-sm" title="View Order">
                                                         <i class="fa fa-eye"></i>
                                                     </a>
-                                                    
-                                                    <form action="{{ route('orders.destroy', $item->order_id) }}" method="POST" style="display: inline;">
+                                                    <a href="{{ route('orders.edit', $item->order_id) }}"
+                                                        class="btn btn-primary btn-sm" title="Edit">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+
+                                                    <form action="{{ route('orders.destroy', $item->order_id) }}"
+                                                        method="POST" style="display: inline;">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this order?')">
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to delete this order?')">
                                                             <i class="fa fa-trash"></i>
                                                         </button>
                                                     </form>

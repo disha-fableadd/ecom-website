@@ -6,7 +6,7 @@
     <div class="row column4 graph">
         <form id="registerForm" action="{{ route('users.update', $userr->id) }}" method="POST" enctype="multipart/form-data" class="form-style">
             @csrf
-            @method('PUT')  <!-- Method spoofing for PUT request -->
+            @method('PUT') 
             <h2 class="text-center mb-5" style="color:#6c5b3e">Edit Customer</h2>
 
             <div class="row">
@@ -58,7 +58,11 @@
                         <input type="radio" name="gender" value="Female" {{ $userr->gender == 'Female' ? 'checked' : '' }} id="female"> Female
                         </label>
                         <label class="radio-inline mb-0">
-                        <input type="radio" name="gender" value="Other" {{ $userr->gender == 'Other' ? 'checked' : '' }} id="other"> Other
+                        <input type="radio" name="gender" value="Other" {{ $userr->gender == 'O
+                        
+                        
+                        
+                        ther' ? 'checked' : '' }} id="other"> Other
                         </label>
                     </div>
                     @error('gender')

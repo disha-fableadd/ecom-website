@@ -1,393 +1,188 @@
 @extends('admin-layout.app')
+@section('title', 'Create Order')
 @section('content')
-<style>
 
-#orderFormContainer {
-    display: none;
-    transition: all 0.3s ease;
-}
+<div class="container-fluid mt-5">
+    <div class="row column4 graph">
+        <form id="orderForm" action="" method="POST" enctype="multipart/form-data" class="form-style">
+            <h2 class="text-center mb-5" style="color:#6c5b3e">Create Order</h2>
+            @csrf
 
-
-    /* General container */
-    .container-fluid {
-        margin-top: 30px;
-    }
-
-    /* Card styling */
-    .card {
-        border-radius: 8px;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e2e6ea;
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    /* Form elements */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    label {
-        font-weight: bold;
-    }
-
-    select.form-control,
-    input.form-control {
-        height: 40px;
-        font-size: 1rem;
-    }
-
-    /* Table styling */
-    .table {
-        border-radius: 8px;
-        overflow: hidden;
-        margin-top: 20px;
-    }
-
-    .table-bordered {
-        border: 1px solid #ddd;
-    }
-
-    .table th,
-    .table td {
-        padding: 1rem;
-        text-align: center;
-    }
-
-    .table th {
-        background-color: #214162;
-        color: white;
-    }
-
-    .table td img {
-        max-width: 100px;
-        max-height: 100px;
-        object-fit: cover;
-    }
-
-    /* Button styling */
-    .btn {
-        border-radius: 5px;
-
-        font-size: 1rem;
-    }
-
-    .btn-primary {
-        background-color: #15283c;
-        border-color: #15283c;
-    }
-
-    .btn-primary:hover {
-        background-color: #15283c;
-        border-color: #15283c;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-
-    .btn-danger:hover {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
-
-    /* Grand Total Styling */
-    .text-right {
-        font-size: 1.25rem;
-        font-weight: bold;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .text-center .btn {
-        width: 150px;
-        padding: 0.6rem 0;
-    }
-
-    /* Alert message styles */
-    .alert {
-        font-size: 1rem;
-        margin-bottom: 20px;
-    }
-
-    .alert-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .alert-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    /* Quantity Controls */
-    .quantity-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .quantity-container input {
-        width: 100px;
-        text-align: center;
-    }
-
-    .quantity-container button {
-        width: 30px;
-        height: 30px;
-        font-size: 1.2rem;
-        margin: 0 5px;
-    }
-
-    .decreaseQty,
-    .increaseQty {
-
-        font-weight: bold;
-    }
-
-    /* Add Product Button */
-    #add-more {
-        margin-top: 10px;
-        font-size: 1rem;
-        padding: 0.8rem 1.6rem;
-        width: 20%;
-    }
-
-    /* Order Item Row */
-    #orderTable tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-    #orderTable tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-</style>
-
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <div class="card shadow">
-                <div class="card-header border-0">
-                    <h3 class="mb-0">Create Order</h3>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="customer_id">Customer</label>
+                    <select class="form-control" name="uid" id="uid">
+                        <option value="">Select Customer</option>
+                        @foreach ($customers as $customer)
+                            <option value="{{ $customer->id }}" data-email="{{ $customer->email }}" data-mobile="{{ $customer->mobile }}">
+                                {{ $customer->first_name }} {{ $customer->last_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div id="uid-error" class="text-danger">selecrt customer first</div>
                 </div>
-                <div class="card-body">
-                    <form id="orderForm" method="POST" action="{{ route('orders.store') }}">
-                        @csrf
-                        <!-- Select Customer -->
-                        <div class="form-group">
-                            <label for="customer">Select Customer</label>
-                            <select class="form-control" id="customer" name="customer" required>
-                                <option value="">Select Customer</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->first_name }}
-                                        {{ $customer->last_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="product">Select Product</label>
-                            <select class="form-control" id="product" name="product" required>
-                                <option value="">Select Product</option>
-                                @foreach ($products as $product)
-                                    <option value="{{ $product->id  }}" data-price="{{ $product->price }}"
-                                        data-image="{{  asset('storage/' . json_decode($product->image)[0]) }}">
-                                        {{ $product->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <!-- Add More Button -->
-                        <div class="form-group">
-                            <button type="button" id="add-more" class="btn btn-primary">Add Product</button>
-                        </div>
 
-                        <!-- Order Table -->
-                        <table class="table table-bordered" id="orderTable">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Image</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total Price</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orderTableBody">
-
-                            </tbody>
-                        </table>
-
-
-                        <div class="text-right mt-3">
-                            <strong>Grand Total: $<span id="grandTotal">0.00</span></strong>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <button type="button" id="submitOrder" class="btn btn-primary">Submit Order</button>
-                        </div>
-                    </form>
-
-
-                 
-
-
+                <div class="col-md-6 form-group">
+                    <label for="product_id">Product</label>
+                    <select class="form-control" name="product_id" id="product_id">
+                        <option value="">Select Product</option>
+                        @foreach ($products as $product)
+                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">
+                                {{ $product->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div id="product_id-error" class="text-danger">select product first</div>
                 </div>
             </div>
-        </div>
-    </div>
 
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" id="quantity" placeholder="Enter quantity" min="1">
+                    <div id="quantity-error" class="text-danger">enter product quantity</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" readonly>
+                    <div id="email-error" class="text-danger">enter email addresss</div>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="mobile">Mobile</label>
+                    <input type="text" class="form-control" name="mobile" id="mobile" placeholder="Enter mobile number" readonly>
+                    <div id="mobile-error" class="text-danger">enter mobile number</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="address_line_1">Address Line 1</label>
+                    <input type="text" class="form-control" name="address_line_1" id="address_line_1" placeholder="Enter address">
+                    <div id="address_line_1-error" class="text-danger">enter address </div>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="zip_code">Zip Code</label>
+                    <input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Enter zip code">
+                    <div id="zip_code-error" class="text-danger">enter zip_code</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="city">City</label>
+                    <select class="form-control" name="city" id="city">
+                        <option value="">Select City</option>
+                        <option value="surat">surat</option>
+                        <option value="mumbai">mumbai</option>
+                        <option value="rajkot">rajkot</option>
+                    </select>
+                    <div id="city-error" class="text-danger">select the city</div>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="state">State</label>
+                    <select class="form-control" name="state" id="state">
+                        <option value="">Select State</option>
+                        <option value="gujarat">gujarat</option>
+                        <option value="maharashtra">maharashtra</option>
+                    </select>
+                    <div id="state-error" class="text-danger">select state</div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+
+            <br><br>
+            <input type="hidden" id="total_price" name="total">
+            <p style="float:right">Total Price: <span id="display_price">0</span></p>
+        </form>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
+    var $j = jQuery.noConflict();
+    $j(document).ready(function () {
+      
+        $j('.text-danger').hide();
 
-        function updateTotalPrice() {
-            let grandTotal = 0;
-            $('#orderTableBody tr').each(function () {
-                grandTotal += parseFloat($(this).find('.totalPrice').text());
-            });
-            $('#grandTotal').text(grandTotal.toFixed(2));
-        }
+    
+        $j('#quantity').on('input', function () {
+            const productId = $('#product_id');
+            const selectedOption = productId.find('option:selected');
+            const price = selectedOption.data('price') || 0;
+            const quantity = $(this).val() || 0;
+            const total = price * quantity;
 
-        function showMessage(message, type = 'danger') {
-            const messageContainer = $('#messageContainer');
-            if (messageContainer.length === 0) {
-                // Create message container if it doesn't exist
-                $('body').prepend(`<div id="messageContainer" class="alert alert-${type}">${message}</div>`);
-            } else {
-                messageContainer.removeClass('alert-danger alert-success').addClass(`alert alert-${type}`);
-                messageContainer.text(message);
-                messageContainer.show();
-            }
-            setTimeout(() => {
-                messageContainer.hide();
-            }, 6000);
-        }
-
-        $('#add-more').click(function () {
-            const selectedProduct = $('#product').val();
-            const selectedProductPrice = $('#product option:selected').data('price');
-            const selectedProductName = $('#product option:selected').text();
-            const selectedProductImage = $('#product option:selected').data('image');
-
-            if (!selectedProduct) {
-                showMessage('Please select a product before clicking Add More.');
-                return;
-            }
-
-            const existingRow = $('#orderTableBody').find(`tr[data-product-id="${selectedProduct}"]`);
-
-            if (existingRow.length > 0) {
-                // Increase quantity if the product already exists
-                const quantityInput = existingRow.find('.quantity');
-                const currentQuantity = parseInt(quantityInput.val());
-                const newQuantity = currentQuantity + 1;
-                quantityInput.val(newQuantity);
-
-                const newTotalPrice = (newQuantity * selectedProductPrice).toFixed(2);
-                existingRow.find('.totalPrice').text(newTotalPrice);
-            } else {
-                // Add new row if product does not exist
-                const row = `
-        <tr data-product-id="${selectedProduct}">
-            <td>${selectedProductName}</td>
-            <td><img src="${selectedProductImage}" alt="${selectedProductName}" width="100" height="100"></td>
-            <td>${selectedProductPrice}</td>
-            <td class="quantity-container">
-                <button type="button" class="btn btn-secondary btn-sm decreaseQty">-</button>
-                <input type="number" class="form-control quantity" value="1" min="1" readonly>
-                <button type="button" class="btn btn-secondary btn-sm increaseQty">+</button>
-            </td>
-            <td class="totalPrice">${selectedProductPrice}</td>
-            <td><button type="button" class="btn btn-danger removeProduct">Remove</button></td>
-        </tr>
-    `;
-                $('#orderTableBody').append(row);
-            }
-
-            updateTotalPrice();
-            $('#product').val(''); // Clear the product dropdown
+            $j('#total_price').val(total);
+            $j('#display_price').text(total.toFixed(2));
         });
 
+       
+        $j('#uid').on('change', function () {
+            const selectedOption = $(this).find('option:selected');
+            const email = selectedOption.data('email') || '';
+            const mobile = selectedOption.data('mobile') || '';
 
-        // Remove or decrease product quantity
-        $(document).on('click', '.removeProduct', function () {
-            const row = $(this).closest('tr');
-            const quantityInput = row.find('.quantity');
-            const quantity = parseInt(quantityInput.val(), 10);
-
-            if (quantity > 1) {
-                // Decrease the quantity by 1 if greater than 1
-                quantityInput.val(quantity - 1);
-                const price = parseFloat(row.find('td:nth-child(3)').text());
-                row.find('.totalPrice').text(((quantity - 1) * price).toFixed(2));
-            } else {
-                // If quantity is 1, remove the row entirely
-                row.remove();
-            }
-
-            updateTotalPrice();
-        });
-
-        // Increase product quantity
-        $(document).on('click', '.increaseQty', function () {
-            const row = $(this).closest('tr');
-            const quantityInput = row.find('.quantity');
-            const quantity = parseInt(quantityInput.val(), 10);
-            const price = parseFloat(row.find('td:nth-child(3)').text());
-
-            quantityInput.val(quantity + 1);
-            row.find('.totalPrice').text(((quantity + 1) * price).toFixed(2));
-
-            updateTotalPrice();
-        });
-
-        // Decrease product quantity
-        $(document).on('click', '.decreaseQty', function () {
-            const row = $(this).closest('tr');
-            const quantityInput = row.find('.quantity');
-            const quantity = parseInt(quantityInput.val(), 10);
-            const price = parseFloat(row.find('td:nth-child(3)').text());
-
-            if (quantity > 1) {
-                quantityInput.val(quantity - 1);
-                row.find('.totalPrice').text(((quantity - 1) * price).toFixed(2));
-                updateTotalPrice();
-            }
+            $('#email').val(email);
+            $('#mobile').val(mobile);
         });
 
       
-   
+        $j('#orderForm').on('submit', function (event) {
+            event.preventDefault();
 
+            let formIsValid = true;
 
+         
+            $j('#uid, #product_id, #quantity, #email, #mobile, #address_line_1, #zip_code, #city, #state').each(function () {
+                const field = $j(this);
+                const fieldId = field.attr('id');
+                const errorDiv = $j('#' + fieldId + '-error');
+
+              
+                errorDiv.hide();
+
+       
+                if (field.val().trim() === '') {
+                    errorDiv.text('This field is required').show();
+                    formIsValid = false;
+                }
+            });
+
+        
+            if (formIsValid) {
+                const formData = new FormData(this);
+
+                $j.ajax({
+                    url: "{{ route('orders.store') }}",
+                    method: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                       
+                            window.location.href = "{{ route('orders.index') }}";
+                        } else {
+                            if (response.errors) {
+                                
+                                $j.each(response.errors, function (field, messages) {
+                                    $j('#' + field + '-error').html(messages.join('<br>')).show();
+                                });
+                            }
+                        }
+                    },
+                });
+            }
+        });
     });
 </script>
-
-
-
-
 
 
 @endsection

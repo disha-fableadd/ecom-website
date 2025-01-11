@@ -33,15 +33,15 @@ class CustomerController extends Controller
             'gender' => 'required|in:Male,Female,Other',
             'mobile' => 'nullable|string|max:15',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
         ]);
-
-        $profile_picture = $request->file('profile_picture');
-
-        $profile_picture_path = $profile_picture->store('uploads', 'public');
-
-
-        Userr::create([
+    
+        $profile_picture_path = null;
+        if ($request->hasFile('profile_picture')) {
+            $profile_picture = $request->file('profile_picture');
+            $profile_picture_path = $profile_picture->store('uploads', 'public');
+        }
+    
+        $user = Userr::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -51,10 +51,16 @@ class CustomerController extends Controller
             'mobile' => $request->mobile,
             'profile_picture' => $profile_picture_path,
         ]);
-
-        return response()->json(['message' => 'User added successfully']);
-    }
-
+    
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'customer added successfully!',
+                'user' => $user, 
+            ]);
+        }
+        return redirect()->route('users.index')->with('success', 'user added successfully.');    }
+    
     // Display All Users
     public function index(Request $request)
     {
