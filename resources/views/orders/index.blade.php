@@ -10,7 +10,7 @@
                 <div class="full graph_head">
                     <div class="d-flex heading1 margin_0">
                         <h2>All Order </h2>
-                        <a href="{{ route('products.create') }}" class="btn btn-lg"
+                        <a href="{{ route('orders.create') }}" class="btn btn-lg"
                         style="margin-left: 785px; background-color:#15283c; color:white">Add New Order</a>
                     </div>
                 </div>

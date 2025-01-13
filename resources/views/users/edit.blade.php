@@ -58,11 +58,7 @@
                         <input type="radio" name="gender" value="Female" {{ $userr->gender == 'Female' ? 'checked' : '' }} id="female"> Female
                         </label>
                         <label class="radio-inline mb-0">
-                        <input type="radio" name="gender" value="Other" {{ $userr->gender == 'O
-                        
-                        
-                        
-                        ther' ? 'checked' : '' }} id="other"> Other
+                        <input type="radio" name="gender" value="Other" {{ $userr->gender == 'Other' ? 'checked' : '' }} id="other"> Other
                         </label>
                     </div>
                     @error('gender')

@@ -111,7 +111,7 @@ class CustomerController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:user,email,',
+            'email' => 'required|email',
             'password' => 'nullable|min:8',
             'age' => 'required|integer',
             'gender' => 'required|in:Male,Female,Other',

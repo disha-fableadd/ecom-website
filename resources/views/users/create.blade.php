@@ -94,18 +94,18 @@
 
 <script>
     var $j = jQuery.noConflict();
-    $j(document).ready(function() {
+    $j(document).ready(function () {
         // Initially hide all error messages
         $j('.text-danger').hide();
 
         // Handle form submission
-        $j('#registerForm').on('submit', function(event) {
+        $j('#registerForm').on('submit', function (event) {
             event.preventDefault(); // Prevent default form submission
 
             let formIsValid = true; // Assume form is valid initially
 
             // Validate each required field
-            $j('#first_name, #last_name, #email, #password, #age, #gender, #mobile').each(function() {
+            $j('#first_name, #last_name, #email, #password, #age, #gender, #mobile').each(function () {
                 const field = $j(this); // Get current field
                 const fieldId = field.attr('id'); // Get field's ID
                 const errorDiv = $j('#' + fieldId + '-error'); // Corresponding error div
@@ -120,6 +120,39 @@
                 }
             });
 
+            // Validate email field
+            const emailField = $j('#email');
+            const emailErrorDiv = $j('#email-error');
+
+            const emailValue = emailField.val().trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex pattern
+
+            if (emailValue !== '' && !emailPattern.test(emailValue)) {
+                emailErrorDiv.text('Enter a valid email address').show();
+                formIsValid = false;
+            }
+
+            // Validate mobile field for numeric value and specific length
+            const mobileField = $j('#mobile');
+            const mobileErrorDiv = $j('#mobile-error');
+
+            const mobileValue = mobileField.val().trim();
+            const mobilePattern = /^[0-9]{10}$/; // Example: 10-digit numeric pattern
+
+            if (mobileValue !== '' && !mobilePattern.test(mobileValue)) {
+                mobileErrorDiv.text('Enter a valid 10-digit contact number').show();
+                formIsValid = false;
+            }
+
+            // Validate image field
+            const imageField = $j('#profile_picture'); // Replace with your image field's ID
+            const imageErrorDiv = $j('#profile_picture-error'); // Replace with your error div's ID
+
+            if (imageField.val().trim() === '') {
+                imageErrorDiv.text('Profile picture is required').show();
+                formIsValid = false;
+            }
+
             // If form is valid, proceed with AJAX submission
             if (formIsValid) {
                 const formData = new FormData(this); // Collect form data
@@ -131,13 +164,13 @@
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             window.location.href = "{{ route('users.index') }}"; // Redirect on success
                         } else {
                             if (response.errors) {
                                 // Display server-side validation errors
-                                $j.each(response.errors, function(field, messages) {
+                                $j.each(response.errors, function (field, messages) {
                                     $j('#' + field + '-error').html(messages.join('<br>')).show();
                                 });
                             }
@@ -153,7 +186,7 @@
         const file = event.target.files[0];
         const reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const previewContainer = document.getElementById('image_preview');
             previewContainer.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" style="max-width: 100%; height: auto;"/>`;
         };
@@ -163,6 +196,7 @@
         }
     }
 </script>
+
 
 
 @endsection

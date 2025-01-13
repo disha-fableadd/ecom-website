@@ -26,7 +26,7 @@ class OrdersController extends Controller
                 })->orWhere('price', 'like', '%' . $search . '%')
                     ->orWhere('order_id', 'like', '%' . $search . '%');
             })
-            ->orderBy('created_at', 'desc') // Sorting by the `created_at` field in descending order
+            ->orderBy('order_id', 'desc') // Sorting by the `created_at` field in descending order
             ->paginate(5);
 
         return view('orders.index', compact('orderItems', 'user'));
@@ -62,108 +62,152 @@ class OrdersController extends Controller
 
     public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'uid' => 'required|exists:user,id',
+            'product_id' => 'required|array|min:1',
+            'product_id.*' => 'exists:product,id',
+            'quantity' => 'required|array|min:1',
+            'quantity.*' => 'integer|min:1',
+            'email' => 'required|email',
+            'mobile' => 'required|numeric',
+            'address_line_1' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:10',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'total' => 'required|numeric|min:1',
+        ]);
+
+        // Fetch user data based on the uid
+        $user = Userr::find($request->uid);
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.']);
+        }
+
+        \DB::beginTransaction();
+
+        try {
+            // Create the order using user details
+            $order = Order::create([
+                'uid' => $request->uid,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'address_line_1' => $request->address_line_1,
+                'zip_code' => $request->zip_code,
+                'city' => $request->city,
+                'state' => $request->state,
+                'total' => $request->total,
+            ]);
+
+            // Process the order items
+            foreach ($request->product_id as $index => $productId) {
+                $product = Product::findOrFail($productId);
+                $quantity = $request->quantity[$index];
+                $price = $product->price;
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'pid' => $productId,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                ]);
+            }
+
+            \DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Order created successfully.']);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+
+            // Log the exception message
+            \Log::error('Order creation error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the order. Please try again later.',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+    public function edit($id)
+    {
+        // Get the order by ID
+        $order = Order::findOrFail($id);
+        $customers = Userr::all();
+        $products = Product::all();
+        $order = Order::with('orderItems.product')->find($id);
+        $orderItem = $order->orderItems->first();
+        return view('orders.edit', compact('order', 'customers', 'products', 'orderItem'));
+    }
+    public function update(Request $request, $orderId)
+    {
+        dd($request->all());
+        // Validate the request
         $request->validate([
             'uid' => 'required|exists:user,id',
-            'product_id' => 'required|exists:product,id',
-            'quantity' => 'required|numeric|min:1',
             'email' => 'required|email',
-            'mobile' => 'required',
-            'address_line_1' => 'required',
-            'zip_code' => 'required',
-            'city' => 'required',
-            'state' => 'required',
+            'mobile' => 'required|regex:/^[0-9]{10}$/',
+            'address_line_1' => 'required|string',
+            'zip_code' => 'required|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
+            'products' => 'required|array',  
+            'products.*.pid' => 'required|exists:product,id',
+            'products.*.quantity' => 'required|integer|min:1',
         ]);
     
-        $user = Userr::find($request->uid);
-        $product = Product::find($request->product_id);
-        $total = $product->price * $request->quantity;
+        $order = Order::findOrFail($orderId);
     
-        $order = Order::create([
+        $order->update([
             'uid' => $request->uid,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
             'email' => $request->email,
             'mobile' => $request->mobile,
             'address_line_1' => $request->address_line_1,
             'zip_code' => $request->zip_code,
             'city' => $request->city,
             'state' => $request->state,
-            'total' => $total,
         ]);
     
-        OrderItem::create([
-            'order_id' => $order->id,
-            'pid' => $request->product_id,
-            'quantity' => $request->quantity,
-            'price' => $product->price,
-        ]);
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'order added successfully!',
-                'order' => $order, 
-            ]);
+        $products = [];
+        foreach ($request->products as $product) {
+            if (isset($products[$product['pid']])) {
+                $products[$product['pid']] += $product['quantity'];
+            } else {
+                $products[$product['pid']] = $product['quantity'];
+            }
         }
     
-        return redirect()->route('orders.index')->with('success', 'user added successfully.'); 
-       }
-    
-
-    public function edit($id)
-    {
-        // Retrieve the order by its ID
-        $order = Order::findOrFail($id);
-
-        // Retrieve all customers and products
-        $customers = Userr::all();
-        $products = Product::all();
-
-
-
-        $order = Order::with('orderItems.product')->find($id);
-        $orderItem = $order->orderItems->first();
-
-        return view('orders.edit', compact('order', 'customers', 'products', 'orderItem'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $order = Order::findOrFail($id);
-    
-        $validatedData = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'product_name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'email' => 'required|email',
-            'mobile' => 'required|string',
-            'address_line_1' => 'required|string',
-            'zip_code' => 'required|string',
-            'city' => 'required|string',
-            'state' => 'required|string',
-        ]);
-    
-        $orderItem = $order->orderItems->first();
-    
-        if (!$orderItem) {
-            return back()->withErrors(['error' => 'No order items found for this order']);
+        foreach ($products as $productId => $quantity) {
+            OrderItem::updateOrCreate(
+                ['order_id' => $orderId, 'pid' => $productId],
+                ['quantity' => $quantity]
+            );
         }
     
-        $totalPrice = $validatedData['quantity'] * $orderItem->product->price;
+        $totalPrice = 0;
+        foreach ($order->orderItems as $item) {
+            $product = Product::find($item->pid); 
+            $totalPrice += $product->price * $item->quantity;
+        }
+        $order->total = $totalPrice;
+        $order->save();
     
-        $orderItem->update([
-            'quantity' => $validatedData['quantity'],
+        return response()->json([
+            'success' => true,
+            'message' => 'Order updated successfully',
         ]);
-    
-        $order->update([
-            'total' => $totalPrice,
-            'address_line_1' => $validatedData['address_line_1'],
-            'zip_code' => $validatedData['zip_code'],
-            'city' => $validatedData['city'],
-            'state' => $validatedData['state'],
-            // Add any other fields you want to update
-        ]);
-    
-        return redirect()->route('orders.index')->with('success', 'Order updated successfully!');
     }
     
+    
+
+
+
+
+
 }
+
