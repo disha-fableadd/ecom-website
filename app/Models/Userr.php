@@ -21,6 +21,7 @@ class Userr extends Model
         'gender',
         'mobile',
         'profile_picture',
+        'google_id',
     ];
 
     // If you're using encryption for password field

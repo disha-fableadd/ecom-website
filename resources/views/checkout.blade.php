@@ -2,8 +2,8 @@
 
 @section('content')
 
-<form id="checkout-form" method="POST" action="{{ route('placeorder') }}">
-@csrf
+<form id="checkout-form" method="POST" action="{{ route('processpayment') }}">
+    @csrf
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
             <div class="col-lg-8">
@@ -45,14 +45,16 @@
                         <!-- Address -->
                         <div class="col-md-6 form-group">
                             <label>Address Line 1</label>
-                            <input class="form-control" type="text" name="address" placeholder="123 Street">
+                            <input class="form-control" type="text" name="address_line_1"
+                                value="{{ old('address_line_1') }}" placeholder="123 Street">
                             @error('address_line_1')
                             <div class="error-message" style="color: red;">{{ $message }}</div> @enderror
                         </div>
                         <!-- ZIP Code -->
                         <div class="col-md-6 form-group">
                             <label>ZIP Code</label>
-                            <input class="form-control" type="text" name="zip_code" placeholder="123">
+                            <input class="form-control" type="text" name="zip_code" value="{{ old('zip_code') }}"
+                                placeholder="123">
                             @error('zip_code')
                             <div class="error-message" style="color: red;">{{ $message }}</div> @enderror
                         </div>
@@ -103,17 +105,75 @@
                             </div>
                         </div>
                     </div>
-
-                   
-                    <div class="card-footer border-secondary bg-transparent">
-                    <button type="submit" id="place-order"
-                    class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" name="payment" id="paypal"
+                                    value="paypal">
+                                <label class="custom-control-label" for="paypal">PayPal</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" name="payment" id="stripe"
+                                    value="stripe">
+                                <label class="custom-control-label" for="stripe">Stripe</label>
+                            </div>
+                        </div>
                     </div>
+                    <div id="paypal-payment" class="card-body" style="display:none;">
+                        <!-- PayPal payment details/form can go here -->
+                        <h5>PayPal Payment Details</h5>
+                        <p>Please complete the payment via PayPal.</p>
+                    </div>
+                    <div id="stripe-payment" class="card-body" style="display:none;">
+                        <!-- Stripe payment details/form can go here -->
+                        <h5>Stripe Payment Details</h5>
+                        <p>Please complete the payment via Stripe.</p>
+                    </div>
+                    <div class="card-footer border-secondary bg-transparent">
+                        <button type="submit" id="place-order"
+                            class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place
+                            Order</button>
+                    </div>
+
+
+
                 </div>
-                    
-                </div>
+
             </div>
         </div>
     </div>
+    </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paypalRadio = document.getElementById('paypal');
+        const stripeRadio = document.getElementById('stripe');
+        const paypalPayment = document.getElementById('paypal-payment');
+        const stripePayment = document.getElementById('stripe-payment');
+
+        // Hide both payment forms initially
+        paypalPayment.style.display = 'none';
+        stripePayment.style.display = 'none';
+
+        // Show the PayPal form when PayPal is selected
+        paypalRadio.addEventListener('change', function() {
+            if (paypalRadio.checked) {
+                paypalPayment.style.display = 'block';
+                stripePayment.style.display = 'none';
+            }
+        });
+
+        // Show the Stripe form when Stripe is selected
+        stripeRadio.addEventListener('change', function() {
+            if (stripeRadio.checked) {
+                stripePayment.style.display = 'block';
+                paypalPayment.style.display = 'none';
+            }
+        });
+    });
+</script>
+
 @endsection

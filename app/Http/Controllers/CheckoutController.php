@@ -19,7 +19,7 @@ class CheckoutController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        $cartCount = 0; 
+        $cartCount = 0;
 
         if ($user) {
             $cartCount = Cart::where('uid', $user->id)->count();
@@ -30,12 +30,14 @@ class CheckoutController extends Controller
             return $item->product->price * $item->quantity;
         });
 
+
+       
         return view('checkout', compact('user', 'cart_items', 'total', 'cartCount'));
     }
 
     public function placeOrder(Request $request)
     {
-        
+
         $user = session('user');
 
         if (!$user) {
@@ -52,17 +54,17 @@ class CheckoutController extends Controller
             'city' => 'required|string',
             'state' => 'required|string',
             'zip_code' => 'required|string',
-          
+
         ]);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
-        // Get the cart items for the user
+
+
         $cart_items = Cart::with('product')->where('uid', $user->id)->get();
-        if ($cart_items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-        }
+        // if ($cart_items->isEmpty()) {
+        //     return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        // }
 
         $total = $cart_items->sum(function ($item) {
             return $item->product->price * $item->quantity;
@@ -82,7 +84,7 @@ class CheckoutController extends Controller
             $order->state = $request->state;
             $order->zip_code = $request->zip_code;
             $order->total = $total;
-           
+
             $order->save();
 
             foreach ($cart_items as $item) {
@@ -98,7 +100,7 @@ class CheckoutController extends Controller
 
             Cart::where('uid', $user->id)->delete();
 
-            return redirect()->route('order.success');
+            return redirect()->route('success');
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors('Something went wrong. Please try again.');

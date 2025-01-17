@@ -9,6 +9,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Cart;
 use App\Models\Product;
 
@@ -21,6 +22,11 @@ use App\Http\Controllers\OrdersController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/process-payment', [PaymentController::class, 'createPayment'])->name('processpayment');
+Route::get('/payment-success', [PaymentController::class, 'capturePayment'])->name('payment.success');;
+
+
 
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
@@ -56,9 +62,10 @@ Route::post('/removeItem', [CartController::class, 'removeItem'])->name('removeI
 
 
 Route::get('/checkout', [CheckoutController::class, 'showCheckoutForm'])->name('checkout');
-Route::post('/placeorder', [CheckoutController::class, 'placeOrder'])->name('placeorder');
+Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('placeorder');
+Route::get('/checkout/paypal-success', [CheckoutController::class, 'handlePayPalSuccess'])->name('paypal.success');
 
-Route::get('/order/success', [OrderController::class, 'successPage'])->name('order.success');
+Route::get('success', [OrderController::class, 'successPage'])->name('success');
 
 
 
